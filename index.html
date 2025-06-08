@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生日快乐，姐姐！🎂</title>
+<!-- Tailwind CSS (本地 JS 引用) -->
+<script src="js/tailwindcss.js"></script>  <!-- 改为本地 js 文件 -->
+
+<!-- Font Awesome (本地 CSS 引用) -->
+<link href="css/font-awesome.min.css" rel="stylesheet">  <!-- 改为本地 css 文件 -->
+
+<!-- Chart.js (本地 JS 引用) -->
+<script src="js/chart.umd.min.js"></script>  <!-- 改为本地 js 文件 -->
+
+<!-- Google Fonts (本地 CSS 引用) -->
+<link href="css/inter.css" rel="stylesheet">  <!-- 改为本地 css 文件，需处理内部字体 URL -->
+    
+    <!-- Tailwind配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FF6B8B', // 主色调：柔和粉色
+                        secondary: '#FFD166', // 辅助色：温暖黄色
+                        accent: '#06D6A0', // 强调色：清新绿色
+                        dark: '#2B2D42', // 深色
+                        light: '#F8F9FA', // 浅色
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <!-- 自定义工具类 -->
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            }
+            .animate-float {
+                animation: float 3s ease-in-out infinite;
+            }
+            .animate-pulse-slow {
+                animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            }
+            .glass {
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
+            }
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+    </style>
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            opacity: 0;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -29px;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            background-color: #FF6B8B;
+            z-index: 1;
+        }
+        
+        .timeline-item:last-child::before {
+            height: 50%;
+        }
+        
+        .timeline-dot {
+            position: absolute;
+            left: -36px;
+            top: 0;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: #FF6B8B;
+            z-index: 2;
+        }
+        
+        .memory-card {
+            transition: transform 0.5s ease;
+        }
+        
+        .memory-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .photo-grid img {
+            transition: transform 0.3s ease;
+        }
+        
+        .photo-grid img:hover {
+            transform: scale(1.05);
+        }
+        
+        .present-box {
+            transition: transform 0.5s ease;
+        }
+        
+        .present-box:hover {
+            transform: scale(1.05) rotate(2deg);
+        }
+        
+        .present-box:hover .present-lid {
+            transform: translateY(-20px) rotate(10deg);
+        }
+        
+        .present-lid {
+            transition: transform 0.5s ease;
+            transform-origin: center bottom;
+        }
+        
+        .music-wave {
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            height: 20px;
+        }
+        
+        .music-wave span {
+            width: 3px;
+            height: 100%;
+            background-color: #FF6B8B;
+            animation: wave 1s ease infinite;
+            border-radius: 3px;
+        }
+        
+        .music-wave span:nth-child(2) { animation-delay: 0.1s; }
+        .music-wave span:nth-child(3) { animation-delay: 0.2s; }
+        .music-wave span:nth-child(4) { animation-delay: 0.3s; }
+        .music-wave span:nth-child(5) { animation-delay: 0.4s; }
+        
+        @keyframes wave {
+            0%, 100% { height: 50%; }
+            50% { height: 100%; }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-light to-pink-50 min-h-screen font-inter">
+    <!-- 导航栏 -->
+    <nav id="navbar" class="fixed w-full z-50 transition-all duration-300 py-4 glass bg-white/70 shadow-sm">
+        <div class="container mx-auto px-4 md:px-6 flex justify-between items-center">
+            <div class="text-primary font-bold text-xl md:text-2xl">
+                <i class="fa fa-birthday-cake mr-2"></i>生日快乐，姐姐
+            </div>
+            <div class="hidden md:flex space-x-8">
+                <a href="#home" class="text-dark hover:text-primary transition-colors duration-300 font-medium">首页</a>
+                <a href="#memory" class="text-dark hover:text-primary transition-colors duration-300 font-medium">成长记忆</a>
+                <a href="#gallery" class="text-dark hover:text-primary transition-colors duration-300 font-medium">照片墙</a>
+                <a href="#message" class="text-dark hover:text-primary transition-colors duration-300 font-medium">生日寄语</a>
+                <a href="#gift" class="text-dark hover:text-primary transition-colors duration-300 font-medium">特别礼物</a>
+            </div>
+            <button id="menu-toggle" class="md:hidden text-dark focus:outline-none">
+                <i class="fa fa-bars text-xl"></i>
+            </button>
+        </div>
+        <!-- 移动端菜单 -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white/95 glass absolute w-full py-4 shadow-lg">
+            <div class="container mx-auto px-4 flex flex-col space-y-4">
+                <a href="#home" class="text-dark hover:text-primary transition-colors duration-300 font-medium py-2">首页</a>
+                <a href="#memory" class="text-dark hover:text-primary transition-colors duration-300 font-medium py-2">成长记忆</a>
+                <a href="#gallery" class="text-dark hover:text-primary transition-colors duration-300 font-medium py-2">照片墙</a>
+                <a href="#message" class="text-dark hover:text-primary transition-colors duration-300 font-medium py-2">生日寄语</a>
+                <a href="#gift" class="text-dark hover:text-primary transition-colors duration-300 font-medium py-2">特别礼物</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 音乐播放器 -->
+    <div class="fixed bottom-6 right-6 z-40 bg-white rounded-full p-3 shadow-lg flex items-center gap-3 glass bg-white/80">
+        <div class="music-wave">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <button id="music-toggle" class="text-primary focus:outline-none">
+            <i class="fa fa-pause"></i>
+        </button>
+    </div>
+
+    <!-- 主内容 -->
+    <main>
+        <!-- 首页/欢迎部分 -->
+        <section id="home" class="pt-28 md:pt-32 pb-20 md:pb-32 relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/10 -z-10"></div>
+            
+            <!-- 装饰元素 -->
+            <div class="absolute top-20 left-10 w-20 h-20 rounded-full bg-primary/20 animate-float"></div>
+            <div class="absolute bottom-20 right-10 w-32 h-32 rounded-full bg-secondary/20 animate-float" style="animation-delay: 1s"></div>
+            <div class="absolute top-1/3 right-1/4 w-16 h-16 rounded-full bg-accent/20 animate-float" style="animation-delay: 2s"></div>
+            
+            <div class="container mx-auto px-4 md:px-6">
+                <div class="max-w-4xl mx-auto text-center">
+                    <h1 class="text-[clamp(2.5rem,6vw,4.5rem)] font-bold text-primary mb-6 leading-tight text-shadow">
+                        生日快乐，姐姐！
+                    </h1>
+                    <p class="text-[clamp(1.2rem,3vw,1.8rem)] text-dark/80 mb-10 leading-relaxed">
+                        今天是属于你的特别日子，愿你的每一天都充满爱与欢笑
+                    </p>
+                    
+                    <!-- 年龄显示 -->
+                    <div class="relative w-48 h-48 md:w-64 md:h-64 mx-auto mb-12 overflow-hidden rounded-full bg-white shadow-xl flex items-center justify-center">
+                        <div class="absolute inset-0 bg-gradient-to-r from-primary to-secondary opacity-80"></div>
+                        <div class="z-10 text-white">
+                            <span id="age" class="text-[clamp(3rem,8vw,5rem)] font-bold">25</span>
+                            <span class="text-xl md:text-2xl">岁</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 向下滚动按钮 -->
+                    <a href="#memory" class="inline-block text-primary/80 hover:text-primary transition-colors duration-300 animate-bounce">
+                        <i class="fa fa-angle-down text-3xl"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 成长记忆时间线 -->
+        <section id="memory" class="py-20 md:py-32 bg-white relative">
+            <div class="container mx-auto px-4 md:px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-[clamp(2rem,5vw,3rem)] font-bold text-dark mb-4">成长记忆</h2>
+                    <p class="text-lg text-dark/70 max-w-2xl mx-auto">
+                        让我们一起回顾那些美好的时光，感谢你一直以来的陪伴
+                    </p>
+                </div>
+                
+                <div class="max-w-3xl mx-auto">
+                    <!-- 时间线 -->
+                    <div class="relative pl-8 md:pl-12">
+                        <!-- 时间线项目1 -->
+                        <div class="timeline-item relative mb-12 pb-12">
+                            <div class="timeline-dot"></div>
+                            <div class="bg-light p-6 rounded-xl shadow-md">
+                                <h3 class="text-xl font-semibold text-primary mb-3">你出生了 🎉</h3>
+                                <p class="text-dark/80 mb-4">
+                                    今天是个特别的日子，你来到了这个世界。从此，我们的家庭多了一份欢乐和温暖。
+                                </p>
+                                <div class="text-sm text-dark/60">1999年5月1日</div>
+                            </div>
+                        </div>
+                        
+                        <!-- 时间线项目2 -->
+                        <div class="timeline-item relative mb-12 pb-12">
+                            <div class="timeline-dot"></div>
+                            <div class="bg-light p-6 rounded-xl shadow-md">
+                                <h3 class="text-xl font-semibold text-primary mb-3">第一天上学 👩‍🎓</h3>
+                                <p class="text-dark/80 mb-4">
+                                    还记得你第一天上学的样子吗？背着小书包，既兴奋又有点紧张。时间过得真快，你已经长大了。
+                                </p>
+                                <div class="text-sm text-dark/60">2005年9月1日</div>
+                            </div>
+                        </div>
+                        
+                        <!-- 时间线项目3 -->
+                        <div class="timeline-item relative mb-12 pb-12">
+                            <div class="timeline-dot"></div>
+                            <div class="bg-light p-6 rounded-xl shadow-md">
+                                <h3 class="text-xl font-semibold text-primary mb-3">高中毕业 🎓</h3>
+                                <p class="text-dark/80 mb-4">
+                                    高中生活结束了，你以优异的成绩毕业。看着你站在毕业典礼上，我感到无比骄傲。
+                                </p>
+                                <div class="text-sm text-dark/60">2017年6月</div>
+                            </div>
+                        </div>
+                        
+                        <!-- 时间线项目4 -->
+                        <div class="timeline-item relative mb-12 pb-12">
+                            <div class="timeline-dot"></div>
+                            <div class="bg-light p-6 rounded-xl shadow-md">
+                                <h3 class="text-xl font-semibold text-primary mb-3">大学毕业 🎉</h3>
+                                <p class="text-dark/80 mb-4">
+                                    大学四年，你成长了很多，也收获了很多。看着你穿着学士服的样子，真的很美。
+                                </p>
+                                <div class="text-sm text-dark/60">2021年6月</div>
+                            </div>
+                        </div>
+                        
+                        <!-- 时间线项目5 -->
+                        <div class="timeline-item relative">
+                            <div class="timeline-dot"></div>
+                            <div class="bg-light p-6 rounded-xl shadow-md">
+                                <h3 class="text-xl font-semibold text-primary mb-3">今天，你的生日 🎂</h3>
+                                <p class="text-dark/80 mb-4">
+                                    又长了一岁，愿你在新的一岁里，身体健康，工作顺利，心想事成。永远爱你的弟弟。
+                                </p>
+                                <div class="text-sm text-dark/60">2025年5月1日</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 照片墙 -->
+        <section id="gallery" class="py-20 md:py-32 bg-gradient-to-br from-light to-pink-50 relative">
+            <div class="container mx-auto px-4 md:px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-[clamp(2rem,5vw,3rem)] font-bold text-dark mb-4">照片墙</h2>
+                    <p class="text-lg text-dark/70 max-w-2xl mx-auto">
+                        记录生活中的美好瞬间，每一张照片都承载着我们的回忆
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- 照片1 -->
+                    <div class="memory-card bg-white rounded-xl shadow-lg overflow-hidden">
+                        <div class="h-64 overflow-hidden">
+                            <img src="https://picsum.photos/seed/sister1/600/400" alt="姐姐童年照片" class="w-full h-full object-cover">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-dark mb-2">童年时光</h3>
+                            <p class="text-dark/70">小时候的你总是充满好奇心，对世界充满了探索的欲望。</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 照片2 -->
+                    <div class="memory-card bg-white rounded-xl shadow-lg overflow-hidden">
+                        <div class="h-64 overflow-hidden">
+                            <img src="https://picsum.photos/seed/sister2/600/400" alt="姐姐少年照片" class="w-full h-full object-cover">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-dark mb-2">少年时期</h3>
+                            <p class="text-dark/70">青春洋溢的你，充满了活力和梦想。</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 照片3 -->
+                    <div class="memory-card bg-white rounded-xl shadow-lg overflow-hidden">
+                        <div class="h-64 overflow-hidden">
+                            <img src="https://picsum.photos/seed/sister3/600/400" alt="姐姐大学照片" class="w-full h-full object-cover">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-dark mb-2">大学时光</h3>
+                            <p class="text-dark/70">大学生活让你变得更加成熟和自信，你是我们的骄傲。</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 照片4 -->
+                    <div class="memory-card bg-white rounded-xl shadow-lg overflow-hidden">
+                        <div class="h-64 overflow-hidden">
+                            <img src="https://picsum.photos/seed/sister4/600/400" alt="姐姐旅行照片" class="w-full h-full object-cover">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-dark mb-2">旅行记忆</h3>
+                            <p class="text-dark/70">旅行中的你总是那么开心，探索新的地方，认识新的朋友。</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 照片5 -->
+                    <div class="memory-card bg-white rounded-xl shadow-lg overflow-hidden">
+                        <div class="h-64 overflow-hidden">
+                            <img src="https://picsum.photos/seed/sister5/600/400" alt="姐姐工作照片" class="w-full h-full object-cover">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-dark mb-2">工作时刻</h3>
+                            <p class="text-dark/70">认真工作的你最美，你的努力和坚持让我敬佩。</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 照片6 -->
+                    <div class="memory-card bg-white rounded-xl shadow-lg overflow-hidden">
+                        <div class="h-64 overflow-hidden">
+                            <img src="https://picsum.photos/seed/sister6/600/400" alt="姐姐和家人照片" class="w-full h-full object-cover">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold text-dark mb-2">家庭时刻</h3>
+                            <p class="text-dark/70">和家人在一起的时光总是那么温馨和快乐。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 生日寄语 -->
+        <section id="message" class="py-20 md:py-32 bg-white relative">
+            <div class="container mx-auto px-4 md:px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-[clamp(2rem,5vw,3rem)] font-bold text-dark mb-4">生日寄语</h2>
+                    <p class="text-lg text-dark/70 max-w-2xl mx-auto">
+                        来自家人和朋友的祝福，愿你的生日充满爱和温暖
+                    </p>
+                </div>
+                
+                <div class="max-w-4xl mx-auto">
+                    <!-- 生日寄语卡片 -->
+                    <div class="bg-gradient-to-br from-primary/10 to-secondary/10 p-8 md:p-12 rounded-2xl shadow-lg relative">
+                        <!-- 装饰元素 -->
+                        <div class="absolute -top-4 -right-4 w-20 h-20 bg-primary/20 rounded-full"></div>
+                        <div class="absolute -bottom-6 -left-6 w-32 h-32 bg-secondary/20 rounded-full"></div>
+                        
+                        <div class="relative z-10">
+                            <div class="flex items-center mb-8">
+                                <div class="w-16 h-16 rounded-full overflow-hidden mr-4">
+                                    <img src="https://picsum.photos/seed/brother/200/200" alt="弟弟照片" class="w-full h-full object-cover">
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-semibold text-dark">亲爱的姐姐</h3>
+                                    <p class="text-dark/70">来自弟弟的祝福</p>
+                                </div>
+                            </div>
+                            
+                            <div class="prose prose-lg max-w-none">
+                                <p>
+                                    在你生日的这一天，我想对你说一声：生日快乐！🎂
+                                </p>
+                                <p>
+                                    时间过得真快，转眼间你已经XX岁了。记得小时候，你总是像个小大人一样照顾我，保护我。现在，我们都长大了，但你依然是我心中最亲近的人。
+                                </p>
+                                <p>
+                                    你是一个非常优秀的人，聪明、善良、坚强。无论遇到什么困难，你总是能够乐观面对，积极解决。你的这种精神一直激励着我，让我也变得更加勇敢和自信。
+                                </p>
+                                <p>
+                                    在新的一岁里，我希望你能够继续追逐自己的梦想，实现自己的人生价值。同时，也要注意身体，不要太劳累。记得多给自己一些时间，去做自己喜欢的事情，去享受生活的美好。
+                                </p>
+                                <p>
+                                    最后，再次祝你生日快乐！愿你的生活充满阳光和欢笑，愿你的梦想都能成真，愿你永远健康快乐，幸福美满！🎉
+                                </p>
+                                <p class="text-right">永远爱你的弟弟</p>
+                            </div>
+                            
+                            <!-- 装饰元素 -->
+                            <div class="mt-10 flex justify-center">
+                                <div class="flex space-x-2">
+                                    <div class="w-3 h-3 rounded-full bg-primary"></div>
+                                    <div class="w-3 h-3 rounded-full bg-secondary"></div>
+                                    <div class="w-3 h-3 rounded-full bg-accent"></div>
+                                    <div class="w-3 h-3 rounded-full bg-primary"></div>
+                                    <div class="w-3 h-3 rounded-full bg-secondary"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 其他寄语 -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
+                        <!-- 寄语1 -->
+                        <div class="bg-light p-6 rounded-xl shadow-md">
+                            <div class="flex items-center mb-4">
+                                <div class="w-12 h-12 rounded-full overflow-hidden mr-3">
+                                    <img src="https://picsum.photos/seed/friend1/200/200" alt="朋友照片" class="w-full h-full object-cover">
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-dark">妈妈</h4>
+                                    <p class="text-sm text-dark/60">5月1日</p>
+                                </div>
+                            </div>
+                            <p class="text-dark/80">
+                                女儿，生日快乐！看着你一天天长大，妈妈感到无比欣慰。愿你在新的一岁里，身体健康，工作顺利，永远幸福快乐！
+                            </p>
+                        </div>
+                        
+                        <!-- 寄语2 -->
+                        <div class="bg-light p-6 rounded-xl shadow-md">
+                            <div class="flex items-center mb-4">
+                                <div class="w-12 h-12 rounded-full overflow-hidden mr-3">
+                                    <img src="https://picsum.photos/seed/friend2/200/200" alt="朋友照片" class="w-full h-full object-cover">
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-dark">爸爸</h4>
+                                    <p class="text-sm text-dark/60">5月1日</p>
+                                </div>
+                            </div>
+                            <p class="text-dark/80">
+                                宝贝，生日快乐！爸爸希望你在新的一岁里，能够更加自信，更加坚强。无论遇到什么困难，都要记得，爸爸妈妈永远是你最坚强的后盾。
+                            </p>
+                        </div>
+                        
+                        <!-- 哥哥的寄语 -->
+                        <div class="bg-light p-6 rounded-xl shadow-md">
+                            <div class="flex items-center mb-4">
+                                <div class="w-12 h-12 rounded-full overflow-hidden mr-3">
+                                    <img src="https://picsum.photos/seed/brother2/200/200" alt="哥哥照片" class="w-full h-full object-cover">
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-dark">哥哥</h4>
+                                    <p class="text-sm text-dark/60">5月1日</p>
+                                </div>
+                            </div>
+                            <p class="text-dark/80">
+                                老妹，生日快乐！时间过得真快，我们都长大了。还记得小时候我们一起玩耍的日子吗？那些回忆是我最宝贵的财富。希望你在新的一岁里，一切顺利，心想事成！有空多回家看看，我们都很想你！
+                            </p>
+                        </div>
+                        
+                        <!-- 朋友的寄语 -->
+                        <div class="bg-light p-6 rounded-xl shadow-md">
+                            <div class="flex items-center mb-4">
+                                <div class="w-12 h-12 rounded-full overflow-hidden mr-3">
+                                    <img src="https://picsum.photos/seed/friend3/200/200" alt="朋友照片" class="w-full h-full object-cover">
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-dark">小美</h4>
+                                    <p class="text-sm text-dark/60">5月1日</p>
+                                </div>
+                            </div>
+                            <p class="text-dark/80">
+                                亲爱的，生日快乐！认识你这么多年，你一直是我生活中最温暖的存在。感谢你一直以来的陪伴和支持，无论是快乐还是困难时刻，你总是在我身边。希望你在新的一岁里，能够实现所有的梦想，找到属于自己的幸福。爱你永远！
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 特别礼物 -->
+        <section id="gift" class="py-20 md:py-32 bg-gradient-to-br from-light to-pink-50 relative">
+            <div class="container mx-auto px-4 md:px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-[clamp(2rem,5vw,3rem)] font-bold text-dark mb-4">特别礼物</h2>
+                    <p class="text-lg text-dark/70 max-w-2xl mx-auto">
+                        这是一份需要密码才能打开的礼物，里面有我为你准备的惊喜
+                    </p>
+                </div>
+                
+                <!-- 礼物盒子 -->
+                <div class="max-w-2xl mx-auto flex justify-center">
+                    <div class="present-box cursor-pointer" id="gift-box">
+                        <!-- 礼物盒盖子 -->
+                        <div class="present-lid w-48 h-12 bg-primary rounded-t-xl relative">
+                            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-3 bg-secondary rounded"></div>
+                            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3 h-10 bg-secondary rounded"></div>
+                        </div>
+                        
+                        <!-- 礼物盒主体 -->
+                        <div class="w-48 h-40 bg-primary/90 rounded-b-xl relative">
+                            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3 h-32 bg-secondary rounded"></div>
+                            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-40 h-3 bg-secondary rounded"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 密码框 -->
+                <div id="password-container" class="max-w-md mx-auto mt-12 hidden">
+                    <div class="bg-white p-8 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-semibold text-dark mb-4 text-center">输入密码开启礼物</h3>
+                        <p class="text-dark/70 mb-6 text-center">密码提示：我们第一次见面的日子（格式：YYYYMMDD）</p>
+                        
+                        <div class="flex flex-col">
+                            <input type="password" id="password-input" class="px-4 py-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-primary/50" placeholder="请输入密码">
+                            <button id="password-submit" class="bg-primary hover:bg-primary/90 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-300">
+                                开启礼物
+                            </button>
+                        </div>
+                        
+                        <div id="password-error" class="text-red-500 mt-3 text-center hidden">
+                            密码错误，请重试
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 礼物内容（默认隐藏） -->
+                <div id="gift-content" class="max-w-4xl mx-auto mt-12 hidden">
+                    <div class="bg-white p-8 md:p-12 rounded-2xl shadow-lg">
+                        <h3 class="text-2xl font-bold text-primary mb-6 text-center">给姐姐的特别礼物</h3>
+                        
+                        <!-- 礼物选项卡 -->
+                        <div class="mb-8">
+                            <div class="flex flex-wrap border-b">
+                                <button class="gift-tab py-3 px-6 font-medium text-primary border-b-2 border-primary" data-tab="photo">照片</button>
+                                <button class="gift-tab py-3 px-6 font-medium text-dark/60 hover:text-primary" data-tab="video">视频</button>
+                                <button class="gift-tab py-3 px-6 font-medium text-dark/60 hover:text-primary" data-tab="audio">音频</button>
+                                <button class="gift-tab py-3 px-6 font-medium text-dark/60 hover:text-primary" data-tab="text">文字</button>
+                            </div>
+                        </div>
+                        
+                        <!-- 照片选项卡内容 -->
+                        <div class="gift-tab-content" id="photo-content">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="rounded-xl overflow-hidden shadow-md">
+                                    <img src="https://picsum.photos/seed/special1/800/600" alt="特别照片1" class="w-full h-auto">
+                                </div>
+                                <div class="rounded-xl overflow-hidden shadow-md">
+                                    <img src="https://picsum.photos/seed/special2/800/600" alt="特别照片2" class="w-full h-auto">
+                                </div>
+                                <div class="rounded-xl overflow-hidden shadow-md">
+                                    <img src="https://picsum.photos/seed/special3/800/600" alt="特别照片3" class="w-full h-auto">
+                                </div>
+                                <div class="rounded-xl overflow-hidden shadow-md">
+                                    <img src="https://picsum.photos/seed/special4/800/600" alt="特别照片4" class="w-full h-auto">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 视频选项卡内容 -->
+                        <div class="gift-tab-content hidden" id="video-content">
+                            <div class="rounded-xl overflow-hidden shadow-md bg-black/5 p-4">
+                                <video controls class="w-full max-w-2xl mx-auto">
+                                    <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+                                    您的浏览器不支持视频播放。
+                                </video>
+                                <p class="text-center text-dark/60 mt-4">这是一段我为你精心准备的视频，希望你喜欢！</p>
+                            </div>
+                        </div>
+                        
+                        <!-- 音频选项卡内容 -->
+                        <div class="gift-tab-content hidden" id="audio-content">
+                            <div class="bg-light rounded-xl p-6 max-w-md mx-auto">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h4 class="font-semibold text-dark">给姐姐的一首歌</h4>
+                                    <button id="audio-play" class="text-primary hover:text-primary/80">
+                                        <i class="fa fa-play"></i>
+                                    </button>
+                                </div>
+                                <div class="h-1 bg-gray-200 rounded-full mb-4">
+                                    <div id="audio-progress" class="h-full bg-primary rounded-full w-0"></div>
+                                </div>
+                                <div class="flex justify-between text-sm text-dark/60">
+                                    <span id="audio-current">0:00</span>
+                                    <span id="audio-duration">0:00</span>
+                                </div>
+                                <audio id="gift-audio">
+                                    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" type="audio/mpeg">
+                                </audio>
+                            </div>
+                        </div>
+                        
+                        <!-- 文字选项卡内容 -->
+                        <div class="gift-tab-content hidden" id="text-content">
+                            <div class="prose prose-lg max-w-none">
+                                <h3 class="text-xl font-semibold text-dark mb-4">亲爱的姐姐</h3>
+                                <p>
+                                    当你看到这封信的时候，我希望你是开心的。这是我为你准备的一份特别礼物，希望你会喜欢。
+                                </p>
+                                <p>
+                                    从小到大，你一直是我心中的榜样。你聪明、善良、坚强，总是能够在我遇到困难的时候给予我帮助和支持。我非常感谢你一直以来对我的关心和爱护。
+                                </p>
+                                <p>
+                                    在这个特别的日子里，我想对你说一声：谢谢你，姐姐！谢谢你一直以来的陪伴和支持，谢谢你成为我生命中最重要的人之一。
+                                </p>
+                                <p>
+                                    愿你的生活充满阳光和欢笑，愿你的梦想都能成真，愿你永远健康快乐，幸福美满！
+                                </p>
+                                <p class="text-right">永远爱你的弟弟</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-dark text-white py-12">
+        <div class="container mx-auto px-4 md:px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <h2 class="text-2xl font-bold mb-2">生日快乐，姐姐！</h2>
+                    <p class="text-white/70">用爱制作的生日惊喜</p>
+                </div>
+                
+                <div class="flex space-x-6">
+                    <a href="#home" class="text-white/70 hover:text-white transition-colors duration-300">首页</a>
+                    <a href="#memory" class="text-white/70 hover:text-white transition-colors duration-300">成长记忆</a>
+                    <a href="#gallery" class="text-white/70 hover:text-white transition-colors duration-300">照片墙</a>
+                    <a href="#message" class="text-white/70 hover:text-white transition-colors duration-300">生日寄语</a>
+                    <a href="#gift" class="text-white/70 hover:text-white transition-colors duration-300">特别礼物</a>
+                </div>
+            </div>
+            
+            <div class="border-t border-white/10 mt-8 pt-8 text-center text-white/50 text-sm">
+                <p>© 2025 用爱制作 | 特别的日子，给特别的你</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 背景音乐 -->
+    <audio id="bg-music" loop playsinline>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- JavaScript -->
+    <script>
+        // 配置区域 - 所有可修改内容集中在这里
+        const config = {
+            // 个人信息
+            person: {
+                birthYear: 1999, // 出生年份
+                password: '19990501', // 礼物密码
+                name: '姐姐' // 称呼
+            },
+            
+            // 图片资源
+            images: {
+                // 个人照片
+                personal: {
+                    brother: 'https://picsum.photos/seed/brother/200/200',
+                    friend1: 'https://picsum.photos/seed/friend1/200/200',
+                    friend2: 'https://picsum.photos/seed/friend2/200/200',
+                    friend3: 'https://picsum.photos/seed/friend3/200/200',
+                    brother2: 'https://picsum.photos/seed/brother2/200/200'
+                },
+                
+                // 照片墙
+                gallery: [
+                    { src: 'https://picsum.photos/seed/sister1/600/400', alt: '姐姐童年照片', title: '童年时光', description: '小时候的你总是充满好奇心，对世界充满了探索的欲望。' },
+                    { src: 'https://picsum.photos/seed/sister2/600/400', alt: '姐姐少年照片', title: '少年时期', description: '青春洋溢的你，充满了活力和梦想。' },
+                    { src: 'https://picsum.photos/seed/sister3/600/400', alt: '姐姐大学照片', title: '大学时光', description: '大学生活让你变得更加成熟和自信，你是我们的骄傲。' },
+                    { src: 'https://picsum.photos/seed/sister4/600/400', alt: '姐姐旅行照片', title: '旅行记忆', description: '旅行中的你总是那么开心，探索新的地方，认识新的朋友。' },
+                    { src: 'https://picsum.photos/seed/sister5/600/400', alt: '姐姐工作照片', title: '工作时刻', description: '认真工作的你最美，你的努力和坚持让我敬佩。' },
+                    { src: 'https://picsum.photos/seed/sister6/600/400', alt: '姐姐和家人照片', title: '家庭时刻', description: '和家人在一起的时光总是那么温馨和快乐。' }
+                ],
+                
+                // 特别礼物中的照片
+                specialGifts: [
+                    { src: 'https://picsum.photos/seed/special1/800/600', alt: '特别照片1' },
+                    { src: 'https://picsum.photos/seed/special2/800/600', alt: '特别照片2' },
+                    { src: 'https://picsum.photos/seed/special3/800/600', alt: '特别照片3' },
+                    { src: 'https://picsum.photos/seed/special4/800/600', alt: '特别照片4' }
+                ]
+            },
+            
+            // 音频资源
+            audio: {
+                background: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', // 背景音乐
+                gift: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' // 礼物中的音频
+            },
+            
+            // 视频资源
+            video: {
+                gift: 'https://www.w3schools.com/html/mov_bbb.mp4' // 礼物中的视频
+            },
+            
+            // 文字内容
+            texts: {
+                // 生日寄语
+                birthdayMessage: `在你生日的这一天，我想对你说一声：生日快乐！🎂
+
+时间过得真快，转眼间你已经XX岁了。记得小时候，你总是像个小大人一样照顾我，保护我。现在，我们都长大了，但你依然是我心中最亲近的人。
+
+你是一个非常优秀的人，聪明、善良、坚强。无论遇到什么困难，你总是能够乐观面对，积极解决。你的这种精神一直激励着我，让我也变得更加勇敢和自信。
+
+在新的一岁里，我希望你能够继续追逐自己的梦想，实现自己的人生价值。同时，也要注意身体，不要太劳累。记得多给自己一些时间，去做自己喜欢的事情，去享受生活的美好。
+
+最后，再次祝你生日快乐！愿你的生活充满阳光和欢笑，愿你的梦想都能成真，愿你永远健康快乐，幸福美满！🎉
+
+永远爱你的弟弟`,
+                
+                // 礼物中的文字
+                giftText: `亲爱的姐姐
+
+当你看到这封信的时候，我希望你是开心的。这是我为你准备的一份特别礼物，希望你会喜欢。
+
+从小到大，你一直是我心中的榜样。你聪明、善良、坚强，总是能够在我遇到困难的时候给予我帮助和支持。我非常感谢你一直以来对我的关心和爱护。
+
+在这个特别的日子里，我想对你说一声：谢谢你，姐姐！谢谢你一直以来的陪伴和支持，谢谢你成为我生命中最重要的人之一。
+
+愿你的生活充满阳光和欢笑，愿你的梦想都能成真，愿你永远健康快乐，幸福美满！
+
+永远爱你的弟弟`
+            },
+            
+            // 时间线内容
+            timeline: [
+                { title: '你出生了 🎉', date: '1999年5月1日', content: '今天是个特别的日子，你来到了这个世界。从此，我们的家庭多了一份欢乐和温暖。' },
+                { title: '第一天上学 👩‍🎓', date: '2005年9月1日', content: '还记得你第一天上学的样子吗？背着小书包，既兴奋又有点紧张。时间过得真快，你已经长大了。' },
+                { title: '高中毕业 🎓', date: '2017年6月', content: '高中生活结束了，你以优异的成绩毕业。看着你站在毕业典礼上，我感到无比骄傲。' },
+                { title: '大学毕业 🎉', date: '2021年6月', content: '大学四年，你成长了很多，也收获了很多。看着你穿着学士服的样子，真的很美。' },
+                { title: '今天，你的生日 🎂', date: '2025年5月1日', content: '又长了一岁，愿你在新的一岁里，身体健康，工作顺利，心想事成。永远爱你的弟弟。' }
+            ],
+            
+            // 其他寄语
+            messages: [
+                { name: '妈妈', date: '5月1日', content: '女儿，生日快乐！看着你一天天长大，妈妈感到无比欣慰。愿你在新的一岁里，身体健康，工作顺利，永远幸福快乐！' },
+                { name: '爸爸', date: '5月1日', content: '宝贝，生日快乐！爸爸希望你在新的一岁里，能够更加自信，更加坚强。无论遇到什么困难，都要记得，爸爸妈妈永远是你最坚强的后盾。' },
+                { name: '哥哥', date: '5月1日', content: '老妹，生日快乐！时间过得真快，我们都长大了。还记得小时候我们一起玩耍的日子吗？那些回忆是我最宝贵的财富。希望你在新的一岁里，一切顺利，心想事成！有空多回家看看，我们都很想你！' },
+                { name: '小美', date: '5月1日', content: '亲爱的，生日快乐！认识你这么多年，你一直是我生活中最温暖的存在。感谢你一直以来的陪伴和支持，无论是快乐还是困难时刻，你总是在我身边。希望你在新的一岁里，能够实现所有的梦想，找到属于自己的幸福。爱你永远！' }
+            ]
+        };
+        
+        // 音频自动播放优化
+        const bgMusic = document.getElementById('bg-music');
+        bgMusic.src = config.audio.background; // 设置背景音乐
+        let audioContext;
+        let hasUserInteracted = false;
+        
+        // 创建无声缓冲以尝试解锁音频
+        function createSilentBuffer() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            
+            const buffer = audioContext.createBuffer(1, 1, 22050);
+            const source = audioContext.createBufferSource();
+            source.buffer = buffer;
+            source.connect(audioContext.destination);
+            source.start(0);
+            
+            // 尝试播放主音频
+            playBackgroundMusic();
+        }
+        
+        // 播放背景音乐
+        function playBackgroundMusic() {
+            // 恢复音频上下文（如果已暂停）
+            if (audioContext && audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+            
+            bgMusic.muted = false;
+            bgMusic.play().catch(error => {
+                console.log('自动播放失败:', error);
+                // 如果是用户交互后失败，可能是其他原因，不再重试
+                if (hasUserInteracted) {
+                    console.log('用户已交互但播放仍失败，可能需要其他解决方案');
+                } else {
+                    // 尝试其他方法
+                    setTimeout(playBackgroundMusic, 1000);
+                }
+            });
+        }
+        
+        // 页面加载时尝试自动播放
+        window.addEventListener('load', () => {
+            // 尝试创建无声缓冲
+            try {
+                createSilentBuffer();
+            } catch (e) {
+                console.log('创建无声缓冲失败:', e);
+                // 直接尝试播放
+                playBackgroundMusic();
+            }
+            
+            // 监听各种可能的用户交互事件
+            ['click', 'touchstart', 'keydown'].forEach(event => {
+                document.addEventListener(event, function onFirstInteraction() {
+                    if (!hasUserInteracted) {
+                        hasUserInteracted = true;
+                        createSilentBuffer();
+                        document.removeEventListener(event, onFirstInteraction);
+                    }
+                });
+            });
+        });
+        
+        // 导航栏滚动效果
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('py-2', 'shadow-md');
+                navbar.classList.remove('py-4');
+            } else {
+                navbar.classList.add('py-4');
+                navbar.classList.remove('py-2', 'shadow-md');
+            }
+        });
+        
+        // 移动端菜单
+        const menuToggle = document.getElementById('menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        menuToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                    
+                    // 关闭移动端菜单
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                }
+            });
+        });
+        
+        // 音乐控制
+        const musicToggle = document.getElementById('music-toggle');
+        
+        musicToggle.addEventListener('click', () => {
+            if (bgMusic.paused) {
+                bgMusic.play();
+                musicToggle.innerHTML = '<i class="fa fa-pause"></i>';
+            } else {
+                bgMusic.pause();
+                musicToggle.innerHTML = '<i class="fa fa-play"></i>';
+            }
+        });
+        
+        // 礼物盒交互
+        const giftBox = document.getElementById('gift-box');
+        const passwordContainer = document.getElementById('password-container');
+        
+        giftBox.addEventListener('click', () => {
+            // 显示密码输入框
+            passwordContainer.classList.remove('hidden');
+            
+            // 添加动画效果
+            passwordContainer.classList.add('animate-bounce');
+            setTimeout(() => {
+                passwordContainer.classList.remove('animate-bounce');
+            }, 1000);
+        });
+        
+        // 密码验证
+        const passwordInput = document.getElementById('password-input');
+        const passwordSubmit = document.getElementById('password-submit');
+        const passwordError = document.getElementById('password-error');
+        const giftContent = document.getElementById('gift-content');
+        
+        passwordSubmit.addEventListener('click', () => {
+            // 从配置中获取正确密码
+            const correctPassword = config.person.password;
+            
+            if (passwordInput.value === correctPassword) {
+                passwordContainer.classList.add('hidden');
+                giftContent.classList.remove('hidden');
+                
+                // 创建庆祝效果
+                createConfetti();
+                
+                // 添加动画效果
+                giftContent.classList.add('animate-float');
+                setTimeout(() => {
+                    giftContent.classList.remove('animate-float');
+                }, 1000);
+            } else {
+                passwordError.classList.remove('hidden');
+                passwordInput.classList.add('border-red-500');
+                
+                // 错误动画
+                passwordContainer.classList.add('animate-shake');
+                setTimeout(() => {
+                    passwordContainer.classList.remove('animate-shake');
+                }, 500);
+            }
+        });
+        
+        passwordInput.addEventListener('input', () => {
+            passwordError.classList.add('hidden');
+            passwordInput.classList.remove('border-red-500');
+        });
+        
+        // 礼物选项卡
+        const giftTabs = document.querySelectorAll('.gift-tab');
+        const giftTabContents = document.querySelectorAll('.gift-tab-content');
+        
+        giftTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // 移除所有选项卡的活动状态
+                giftTabs.forEach(t => {
+                    t.classList.remove('text-primary', 'border-b-2', 'border-primary');
+                    t.classList.add('text-dark/60');
+                });
+                
+                // 添加当前选项卡的活动状态
+                tab.classList.remove('text-dark/60');
+                tab.classList.add('text-primary', 'border-b-2', 'border-primary');
+                
+                // 隐藏所有内容
+                giftTabContents.forEach(content => {
+                    content.classList.add('hidden');
+                });
+                
+                // 显示当前内容
+                const tabId = tab.getAttribute('data-tab');
+                document.getElementById(`${tabId}-content`).classList.remove('hidden');
+            });
+        });
+        
+        // 音频控制
+        const audioPlay = document.getElementById('audio-play');
+        const audioProgress = document.getElementById('audio-progress');
+        const audioCurrent = document.getElementById('audio-current');
+        const audioDuration = document.getElementById('audio-duration');
+        const giftAudio = document.getElementById('gift-audio');
+        giftAudio.src = config.audio.gift; // 设置礼物音频
+        
+        audioPlay.addEventListener('click', () => {
+            if (giftAudio.paused) {
+                giftAudio.play();
+                audioPlay.innerHTML = '<i class="fa fa-pause"></i>';
+            } else {
+                giftAudio.pause();
+                audioPlay.innerHTML = '<i class="fa fa-play"></i>';
+            }
+        });
+        
+        giftAudio.addEventListener('timeupdate', () => {
+            const percent = (giftAudio.currentTime / giftAudio.duration) * 100;
+            audioProgress.style.width = `${percent}%`;
+            
+            // 更新时间显示
+            audioCurrent.textContent = formatTime(giftAudio.currentTime);
+            audioDuration.textContent = formatTime(giftAudio.duration);
+        });
+        
+        giftAudio.addEventListener('loadedmetadata', () => {
+            audioDuration.textContent = formatTime(giftAudio.duration);
+        });
+        
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            seconds = Math.floor(seconds % 60);
+            return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        }
+        
+        // 创建庆祝效果
+        function createConfetti() {
+            const colors = ['#FF6B8B', '#FFD166', '#06D6A0', '#118AB2', '#073B4C'];
+            const container = document.body;
+            
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = `${Math.random() * 100}vw`;
+                confetti.style.top = `${Math.random() * 100}vh`;
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                confetti.style.animation = `fall ${3 + Math.random() * 5}s linear forwards`;
+                
+                container.appendChild(confetti);
+                
+                // 移除粒子
+                setTimeout(() => {
+                    confetti.remove();
+                }, 8000);
+            }
+            
+            // 添加CSS动画
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fall {
+                    0% {
+                        transform: translateY(-10vh) rotate(0deg);
+                        opacity: 1;
+                    }
+                    100% {
+                        transform: translateY(100vh) rotate(360deg);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        // 初始化年龄显示
+        function initAge() {
+            const birthYear = config.person.birthYear;
+            const currentYear = new Date().getFullYear();
+            const ageElement = document.getElementById('age');
+            
+            if (ageElement) {
+                ageElement.textContent = currentYear - birthYear;
+            }
+        }
+        
+        // 初始化视频源
+        function initVideo() {
+            const videoElement = document.querySelector('#video-content video source');
+            if (videoElement) {
+                videoElement.src = config.video.gift;
+                videoElement.parentElement.load();
+            }
+        }
+        
+        // 初始化生日寄语
+        function initBirthdayMessage() {
+            const messageElement = document.querySelector('#message .prose');
+            if (messageElement) {
+                messageElement.innerHTML = config.texts.birthdayMessage;
+            }
+        }
+        
+        // 初始化礼物文字
+        function initGiftText() {
+            const textElement = document.querySelector('#text-content .prose');
+            if (textElement) {
+                textElement.innerHTML = config.texts.giftText;
+            }
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('DOMContentLoaded', () => {
+            initAge();
+            initVideo();
+            initBirthdayMessage();
+            initGiftText();
+        });
+    </script>
+</body>
+</html>
