@@ -1,5 +1,5 @@
 # 🎉 给姐姐的生日祝福网页模板
-
+![Happy-Birthday](https://socialify.git.ci/xyz66882/Happy-Birthday/image?font=Raleway&forks=1&issues=1&name=1&owner=1&pattern=Plus&pulls=1&stargazers=1&theme=Auto)
 <p align="center">
   <!-- 创建日期 --><img alt="GitHub Created At" src="https://img.shields.io/github/created-at/xyz66882/Happy-Birthday?logo=github&label=%E5%88%9B%E5%BB%BA%E6%97%A5%E6%9C%9F">
   <!-- 下载量 --><a href="https://github.com/xyz66882/Happy-Birthday/releases"><img src="https://img.shields.io/github/downloads/xyz66882/Happy-Birthday/total?logo=github&label=%E4%B8%8B%E8%BD%BD%E9%87%8F"></a>
@@ -26,7 +26,20 @@
 
 这是一个简单的 HTML 生日祝福网页模板，适合用作电子贺卡或发送给姐姐的专属生日页面。
 
+# 🚀 贡献者
+<a href="https://github.com/xyz66882/Happy-Birthday/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=xyz66882/Happy-Birthday" />
+</a>
+<br /><br />
 
+# ⭐️ 收藏 历史
+<a href="https://www.star-history.com/#xyz66882/Happy-Birthday&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=xyz66882/Happy-Birthday&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=xyz66882/Happy-Birthday&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=xyz66882/Happy-Birthday&type=Date" />
+ </picture>
+</a>
 
 
 ## 参考图：![image](https://github.com/user-attachments/assets/5c6baae0-7030-4ec5-b290-de9026699087)
